@@ -1,0 +1,8 @@
+#
+# system.prop for arubaslim
+#
+
+ro.sf.lcd_density=240
+ro.opengles.version=131072
+audio.legacy.postproc=true
+debug.sf.hw=1
