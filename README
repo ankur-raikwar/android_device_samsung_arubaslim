@@ -1,8 +1,8 @@
 
-Samsung Galaxy Core (GT-I8262) device source / configuration for building Android 4.3.1 (Cyanogenmod 10.2)
+Samsung Galaxy Core (GT-I8262) device source / configuration for building Android 4.2 (Cyanogenmod 10.2)
 
 Getting Started
---------------------
+---------------
 
 To get started with CyanogenMod, you'll need to get
 familiar with [Git and Repo](http://source.android.com/download/using-repo).
@@ -34,6 +34,6 @@ Disclaimer
 --------
 
 All of these device are not supported by CyanogenMod , and hence cut off by the CyanogenMod team. 
-This project is not endorsed or supported by the CyanogenMod team.
+and this project is not endorsed or supported by the CyanogenMod team.
 
 

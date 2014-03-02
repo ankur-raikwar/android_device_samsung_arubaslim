@@ -19,8 +19,8 @@ TARGET_NO_BOOTLOADER := true
 TARGET_NO_RADIOIMAGE := true
 TARGET_BOOTLOADER_BOARD_NAME := arubaslim
 TARGET_KERNEL_CONFIG := cyanogenmod_arubaslim_defconfig
-BOARD_KERNEL_BASE := 0x03200000
-BOARD_KERNEL_PAGESIZE := 2048
+BOARD_KERNEL_BASE := 0x00200000
+BOARD_KERNEL_PAGESIZE := 4096
 TARGET_KERNEL_SOURCE := kernel/samsung/arubaslim
 TARGET_SPECIFIC_HEADER_PATH := device/samsung/arubaslim/include
 BOARD_KERNEL_CMDLINE := androidboot.hardware=qcom loglevel=1 vmalloc=200M
@@ -38,6 +38,7 @@ BOARD_SYSTEMIMAGE_PARTITION_SIZE := 1004535296
 BOARD_USERDATAIMAGE_PARTITION_SIZE := 1291845120
 BOARD_FLASH_BLOCK_SIZE := 131072
 BOARD_RECOVERY_HANDLES_MOUNT := true
+BOARD_USES_MMCUTILS := true
 BOARD_HAS_SDCARD_INTERNAL := true
 BOARD_HAS_NO_MISC_PARTITION := true
 
@@ -81,9 +82,22 @@ BOARD_USES_LIBSECRIL_STUB := true
 BOARD_MOBILEDATA_INTERFACE_NAME := "pdp0"
 BOARD_RIL_CLASS := ../../../device/samsung/arubaslim/ril/
 
+## ION support, ready
+TARGET_USES_ION := true
+
+# SE Policy
+BOARD_SEPOLICY_DIRS += device/samsung/arubaslim/sepolicy
+
+# BOARD_SEPOLICY_UNION += \
+	file_contexts
+
 # UMS
 TARGET_USE_CUSTOM_LUN_FILE_PATH := /sys/devices/platform/msm_hsusb/gadget/lun%d/file
 BOARD_UMS_LUNFILE := "/sys/devices/platform/msm_hsusb/gadget/lun%d/file"
+
+## Vold
+BOARD_VOLD_EMMC_SHARES_DEV_MAJOR := true
+BOARD_VOLD_MAX_PARTITIONS := 24
 
 ## Bluetooth
 BOARD_HAVE_BLUETOOTH := true

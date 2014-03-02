@@ -15,6 +15,8 @@
 # Inherit products (Most specific first)
 # (arubaslim blobs) > (device/vendor)
 $(call inherit-product, vendor/samsung/arubaslim/vendor-blobs.mk)
+# Dalvik Heap
+$(call inherit-product, frameworks/native/build/phone-hdpi-512-dalvik-heap.mk)
 
 ## LDPI assets
 PRODUCT_AAPT_CONFIG := normal hdpi
@@ -34,7 +36,24 @@ PRODUCT_PACKAGES += \
 	lpm.rc \
 	init.qcom.usb.rc \
 	ueventd.qcom.rc \
-           initlogo.rle
+	initlogo.rle \
+	charger \
+	charger_res_images
+
+## Recovery images
+PRODUCT_COPY_FILES += \
+	system/core/charger/images/battery_0.png:recovery/root/res/images/charger/battery_0.png \
+	system/core/charger/images/battery_1.png:recovery/root/res/images/charger/battery_1.png \
+	system/core/charger/images/battery_2.png:recovery/root/res/images/charger/battery_2.png \
+	system/core/charger/images/battery_3.png:recovery/root/res/images/charger/battery_3.png \
+	system/core/charger/images/battery_4.png:recovery/root/res/images/charger/battery_4.png \
+	system/core/charger/images/battery_5.png:recovery/root/res/images/charger/battery_5.png \
+	system/core/charger/images/battery_charge.png:recovery/root/res/images/charger/battery_charge.png \
+	system/core/charger/images/battery_fail.png:recovery/root/res/images/charger/battery_fail.png
+
+## Recovery
+PRODUCT_COPY_FILES += \
+	device/samsung/arubaslim/recovery/sbin/rmt_storage_recovery:recovery/root/sbin/rmt_storage_recovery
 
 ## Hardware properties
 PRODUCT_COPY_FILES += \
@@ -69,10 +88,6 @@ PRODUCT_COPY_FILES += \
     device/samsung/arubaslim/prebuilt/usr/keylayout/gpio-keys.kl:system/usr/keylayout/gpio-keys.kl \
     device/samsung/arubaslim/prebuilt/usr/keylayout/surf_keypad.kl:system/usr/keylayout/surf_keypad.kl \
 
-## Touchscreen configuration
-PRODUCT_COPY_FILES += \
-    device/samsung/arubaslim/prebuilt/usr/idc/sec_touchscreen.idc:system/usr/idc/sec_touchscreen.idc
-
 ### BEGIN: build properties
 
 ## Dalvik
@@ -93,6 +108,10 @@ ADDITIONAL_DEFAULT_PROPERTIES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.sys.force_highendgfx=1
 
+## Disable kernel error
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.kernel.qemu=0
+
 ## Loop ringtone
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.telephony.call_ring.delay=3000 \
@@ -109,12 +128,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     rild.libpath=/system/lib/libril-qc-qmi-1.so \
     ro.telephony.default_network=0 \
-    ro.telephony.ril_class=SamsungRIL \
-    rild.libargs=-d/dev/smd0
-
-## SELinux - we're not ready for enforcing mode yet
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.boot.selinux=permissive
+    rild.libargs=-d/dev/smd0 \
+    ro.ril.hsxpa=1 \
+    ro.ril.gprsclass=10 \
+    ro.multi.rild=true
 
 ## USB
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \

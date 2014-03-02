@@ -6,7 +6,7 @@
     <int name="maxImageWidth">1024</int>
 
     <!-- UAProf URL -->
-    <string name="uaProfUrl">http://wap.samsungmobile.com/uaprof/GT-I8262.xml</string>
+    <string name="uaProfUrl">http://wap.samsungmobile.com/uaprof/GT-i8262.xml</string>
 
     <!-- If enableMultipartSMS is true and smsToMmsTextThreshold > 1, then multi-part SMS messages
          will be converted into a single mms message. For example, if the mms_config.xml file

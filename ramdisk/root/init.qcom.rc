@@ -1,30 +1,32 @@
-import init.${ro.hardware}.usb.rc
+import init.qcom.usb.rc
 
 on init
     # Set permissions for persist partition
     mkdir /persist 0771 system system
 
+on fs
+	mount_all /fstab.qcom
+        
 on early-boot
     # set RLIMIT_MEMLOCK to 64MB
     setrlimit 8 67108864 67108864
 
 on early-init
-    mount debugfs debugfs /sys/kernel/debug
-    # for backwards compatibility
+    # Internal SD
     export EXTERNAL_STORAGE /storage/sdcard0
-    export SECONDARY_STORAGE /storage/sdcard1
     mkdir /storage 0550 system sdcard_r
     mkdir /storage/sdcard0 0000 system system
-    mkdir /storage/sdcard1 0000 system system
-    symlink /storage/sdcard0 /mnt/emmc
-    symlink /storage/sdcard1 /mnt/sdcard
-    symlink /storage/sdcard1 /sdcard
+    symlink /storage/sdcard0 /sdcard
+    symlink /storage/sdcard0 /mnt/sdcard
 
-on fs
-    mount_all fstab.qcom
+    # Externel SD
+    export SECONDARY_STORAGE /storage/sdcard1
+    mkdir /storage/sdcard1 0000 system system
+    symlink /storage/sdcard1 /sdcard1
+    symlink /storage/sdcard1 /mnt/sdcard1
 
 on boot
-    # bluetooth
+    exec system/bin/btnvtool -O
     setprop ro.bt.bdaddr_path "/efs/bluetooth/bt_addr"
     chown bluetooth bluetooth ro.bt.bdaddr_path
     chown bluetooth bluetooth /sys/module/bluetooth_power/parameters/power
@@ -70,9 +72,6 @@ on boot
     chmod 0660 /dev/smd0
     chown system system /dev/smd0
 
-    #BT DUN port-bridge
-#    chmod 0660 /dev/smd7
-#    chown bluetooth bluetooth /dev/smd7
 
     chmod 0444 /sys/devices/platform/msm_hsusb/gadget/usb_state
 
@@ -112,9 +111,6 @@ on boot
     # To prevent out of order acknowledgements from making
     # connection tracking to treat them as not belonging to
     # the connection they belong to.
-    # Otherwise, a weird issue happens in which some long
-    # connections on high-throughput links get dropped when
-    # an ack packet comes out of order
     write /proc/sys/net/netfilter/nf_conntrack_tcp_be_liberal 1
 
 # Permissions for DVFS
@@ -124,11 +120,6 @@ on boot
     chmod 0660 /sys/power/cpufreq_table
     chmod 0660 /sys/power/cpufreq_max_limit
     chmod 0660 /sys/power/cpufreq_min_limit
-
-# import cne init file
-on post-fs
-    export_rc /persist/init.cne.rc
-    start qcom-post-fs
 
 # msm specific files that need to be created on /data
 on post-fs-data
@@ -166,6 +157,9 @@ on post-fs-data
 
     #Create the symlink to qcn wpa_supplicant folder for ar6000 wpa_supplicant
     mkdir /data/system 0775 system system
+# 20120912 Matt
+#    symlink /data/misc/wifi/wpa_supplicant /data/system/wpa_supplicant
+
 
     #Create directories for gpsone_daemon services
     mkdir /data/misc/gpsone_d 0770 system gps
@@ -205,15 +199,24 @@ on property:init.svc.surfaceflinger=stopped
     stop ppd
     stop hdmid
 
-on property:ro.board.platform=msm7630_fusion
-    start usbhub_init
-
 on property:init.svc.wpa_supplicant=stopped
     stop dhcpcd
 
 on property:bluetooth.isEnabled=true
     start abtfilt
     write /sys/class/bluetooth/hci0/idle_timeout 7000
+
+service cnd /system/bin/cnd
+    class late_start
+    socket cnd stream 666 root radio
+
+service rmt_storage /system/bin/rmt_storage
+    class core
+    user root
+    disabled
+
+on property:ro.boot.emmc=true
+    start rmt_storage
 
 # CSR8810 Project 2012.07.10
 service bccmd /system/bin/logwrapper /system/bin/bccmd -b 115200 -t bcsp -d /dev/ttyHS0 psload -r /etc/PSConfig_7820.psr
@@ -246,12 +249,6 @@ service port-bridge /system/bin/port-bridge /dev/smd0 /dev/ttyGS0
     group system inet
     disabled
 
-service qmiproxy /system/bin/qmiproxy
-    class main
-    user radio
-    group radio qcom_diag
-    disabled
-
 # QMUX must be in multiple groups to support external process connections
 service qmuxd /system/bin/qmuxd
     class main
@@ -263,12 +260,6 @@ service netmgrd /system/bin/netmgrd
     class main
     disabled
 
-service sensors /system/bin/sensors.qcom
-    class late_start
-    user root
-    group root
-    disabled
-
 on property:ro.use_data_netmgrd=false
     # netmgr not supported on specific target
     stop netmgrd
@@ -278,6 +269,13 @@ on property:ro.use_data_netmgrd=false
 on property:ro.data.large_tcp_window_size=true
     write /proc/sys/net/ipv4/tcp_adv_win_scale  1
 
+
+service abtfilt /system/bin/abtfilt -d -z -n -v -q -s -w wlan0
+    class late_start
+    user bluetooth
+    group bluetooth net_bt_admin inet net_admin net_raw
+    disabled
+    oneshot
 
 service p2p_supplicant /system/bin/logwrapper /system/bin/p2p_supplicant \
     -ip2p0 -Dnl80211 -c/data/misc/wifi/p2p_supplicant.conf \
@@ -327,48 +325,16 @@ service dhcpcd_bnep0 /system/bin/dhcpcd -BKLG
     disabled
     oneshot
 
-service gpsone_daemon /system/bin/gpsone_daemon
+service atfwd /system/bin/ATFWD-daemon
     class late_start
-    user gps
-    group gps qcom_oncrpc inet net_raw
-    disabled
+    user system
+    group system radio
+    onrestart /system/bin/log -t RIL-ATFWD -p w "ATFWD daemon restarted"
 
-service quipc_igsn /system/bin/quipc_igsn
+service hdmid /system/bin/hdmid
     class late_start
-    user gps
-    group inet gps
+    socket hdmid stream 0660 root system graphics
     disabled
-
-service quipc_main /system/bin/quipc_main
-    class late_start
-    user gps
-    group gps net_admin wifi inet
-    disabled
-
-service location_mq /system/bin/location-mq
-    class late_start
-    user gps
-    group gps
-    disabled
-
-service xtwifi_inet /system/bin/xtwifi-inet-agent
-    class late_start
-    user gps
-    group inet gps
-    disabled
-
-service xtwifi_client /system/bin/xtwifi-client
-    class late_start
-    user gps
-    group net_admin wifi inet gps
-    disabled
-
-service fm_dl /system/bin/sh /system/etc/init.qcom.fm.sh
-    class late_start
-    user root
-    group system qcom_oncrpc
-    disabled
-    oneshot
 
 service hostapd /system/bin/hostapd -dddd /data/hostapd/hostapd.conf
     class late_start
@@ -377,9 +343,30 @@ service hostapd /system/bin/hostapd -dddd /data/hostapd/hostapd.conf
     oneshot
     disabled
 
+service ds_fmc_appd /system/bin/ds_fmc_appd -p "rmnet0" -D
+    class late_start
+    group radio wifi inet
+    disabled
+    oneshot
+
+on property:persist.data.ds_fmc_app.mode=1
+    start ds_fmc_appd
+
+service ims_regmanager /system/bin/exe-ims-regmanagerprocessnative
+    class late_start
+    user system
+    group qcom_oncrpc net_bt_admin inet radio wifi
+    disabled
+
+on property:persist.ims.regmanager.mode=1
+    start ims_regmanager
+
 on property:ro.data.large_tcp_window_size=true
     # Adjust socket buffer to enlarge TCP receive window for high bandwidth (e.g. DO-RevB)
     write /proc/sys/net/ipv4/tcp_adv_win_scale  1
+
+on property:persist.timed.enable=true
+    start time_daemon
 
 service battery_monitor /system/bin/battery_monitor
     user system
@@ -393,6 +380,7 @@ service ril-daemon1 /system/bin/rild -c 1
     user root
     disabled
     group radio cache inet misc audio sdcard_rw qcom_oncrpc diag
+
 
 service sdcard /system/bin/sdcard /data/media 1023 1023
     class late_start
@@ -413,9 +401,6 @@ service hcidump /system/bin/sh /system/etc/hcidump.sh
     group bluetooth system net_bt_admin net_admin
     disabled
     oneshot
-
-service charger /charger
-    class charger
 
 # Restart adbd so it can run as root
 on property:service.adb.root=1
