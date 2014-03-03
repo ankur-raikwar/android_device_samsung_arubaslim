@@ -88,7 +88,7 @@ TARGET_USES_ION := true
 # SE Policy
 BOARD_SEPOLICY_DIRS += device/samsung/arubaslim/sepolicy
 
-# BOARD_SEPOLICY_UNION += \
+BOARD_SEPOLICY_UNION += \
 	file_contexts
 
 # UMS
