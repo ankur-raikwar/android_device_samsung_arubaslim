@@ -47,6 +47,9 @@
 /dev/msm_vidc_enc         0660   system     audio
 /dev/msm_rotator          0664   system     system
 /dev/hw_random            0660   system     system
+/dev/block/mmcblk0p18     0660   system     system
+/dev/block/mmcblk0p20     0660   system     system
+/dev/tun                  0660   system     vpn
 
 #permissions for audio
 /dev/msm_qcelp            0660   system     audio
@@ -70,3 +73,20 @@
 /dev/tty_sdio_00          0660   system     system
 /dev/ttyGS0               0660   system     system
 /dev/i2c-5                0660   media       media
+
+# permissions for dpram
+/dev/dpram0               0660   radio      radio
+/dev/dpram1               0660   radio      radio
+/dev/dpramerr             0660   radio      radio
+/dev/multipdp             0660   radio      radio
+/dev/ttyCSD0              0660   radio      radio
+/dev/ttySMD0              0660   radio      radio
+/dev/ttyGPS0              0660   system     system
+/dev/ttyXTRA0             0660   system     system
+/dev/ttyCPLOG0            0660   radio      radio
+
+/dev/oncrpc/00000000:0        0660   system       qcom_oncrpc
+/dev/oncrpc/3000008c:00050000 0660   system       qcom_oncrpc
+
+# wifi
+/dev/rfkill               0660   wifi        wifi

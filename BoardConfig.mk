@@ -107,10 +107,7 @@ BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/samsung/arubaslim/bluetoot
 BOARD_USES_QCOM_LIBRPC := true
 BOARD_USES_QCOM_GPS := true
 BOARD_USES_QCOM_LIBRPC := true
-# **AMSS version to use for GPS ** #
-BOARD_VENDOR_QCOM_GPS_LOC_API_AMSS_VERSION := 50001
-# ** GPS Hardware ** #
-BOARD_VENDOR_QCOM_GPS_LOC_API_HARDWARE := default
+BOARD_VENDOR_QCOM_GPS_LOC_API_AMSS_VERSION := 50000
 
 ## Camera
 #USE_CAMERA_STUB := true
@@ -125,9 +122,6 @@ BOARD_HAVE_QCOM_FM := true
 ## Audio
 HAVE_HTC_AUDIO_DRIVER := true
 BOARD_USES_GENERIC_AUDIO := true
-
-## Legacy touchscreen support
-BOARD_USE_LEGACY_TOUCHSCREEN := true
 
 ## Device specific libs
 TARGET_PROVIDES_LIBLIGHT := true

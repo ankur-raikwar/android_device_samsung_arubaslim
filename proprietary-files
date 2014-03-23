@@ -43,7 +43,6 @@ lib/libchromatix_s5k3l1yx_hfr_120fps.so
 lib/libchromatix_s5k3l1yx_preview.so
 lib/libchromatix_s5k3l1yx_video_hd.so
 lib/libchromatix_s5k3l1yx_zsl.so
-lib/libv8.so
 
 lib/libOmxAacDec.so
 lib/libOmxAacEnc.so

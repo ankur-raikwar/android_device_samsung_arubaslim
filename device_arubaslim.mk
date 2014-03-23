@@ -53,7 +53,8 @@ PRODUCT_COPY_FILES += \
 
 ## Recovery
 PRODUCT_COPY_FILES += \
-	device/samsung/arubaslim/recovery/sbin/rmt_storage_recovery:recovery/root/sbin/rmt_storage_recovery
+	device/samsung/arubaslim/recovery/sbin/rmt_storage_recovery:recovery/root/sbin/rmt_storage_recovery \
+	device/samsung/arubaslim/recovery/sbin/postrecoveryboot.sh:recovery/root/sbin/postrecoveryboot.sh
 
 ## Hardware properties
 PRODUCT_COPY_FILES += \
@@ -154,3 +155,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.vendor.extension_library=/system/lib/libqc-opt.so
 
 ### END:  properties
+
+$(call inherit-product, build/target/product/full.mk)
+$(call inherit-product, device/common/gps/gps_eu_supl.mk)
+$(call inherit-product, frameworks/native/build/phone-hdpi-512-dalvik-heap.mk)
