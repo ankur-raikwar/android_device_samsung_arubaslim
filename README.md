@@ -1,4 +1,3 @@
-
 Samsung Galaxy Core (GT-I8262) device source / configuration for building Android 4.3.1 (Cyanogenmod 10.2)
 
 Getting Started
