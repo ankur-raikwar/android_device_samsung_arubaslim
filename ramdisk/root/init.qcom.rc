@@ -3,27 +3,21 @@ import init.qcom.usb.rc
 on early-init
     mount debugfs debugfs /sys/kernel/debug
 
-on init
-    # Set permissions for persist partition
-    mkdir /persist 0771 system system
-    mkdir /mnt/media_rw/sdcard0 0700 media_rw media_rw
-    mkdir /mnt/media_rw/sdcard1 0700 media_rw media_rw
-    
+on init    
     # Storage
     mkdir /storage 0550 system sdcard_r
     mkdir /storage/sdcard0 0000 system system
     mkdir /storage/sdcard1 0000 system system
-    
-    # Internal
+	# Internal
     export EXTERNAL_STORAGE /storage/sdcard0
     # External
     export SECONDARY_STORAGE /storage/sdcard1
     
-    ## Create symlinks of storage for backward compability
+    ## Create symlinks of storage for backwards compability
     symlink /storage/sdcard0 /mnt/storage_internal
-    symlink /storage/sdcard0 /storage_internal
+	symlink /storage/sdcard0 /storage_internal
     symlink /storage/sdcard1 /mnt/sdcard
-    syslimk /storage/sdcard1 /sdcard
+    symlink /storage/sdcard1 /sdcard
 
 on fs
 	mount_all /fstab.qcom
@@ -44,6 +38,16 @@ on boot
     chmod 0660 /dev/ttyHS0
     chown bluetooth bluetooth /sys/devices/platform/msm_serial_hs.0/clock
     chmod 0660 /sys/devices/platform/msm_serial_hs.0/clock
+
+	## SD card polling
+	chmod 0664 /sys/devices/platform/msm_sdcc.1/polling
+    chmod 0664 /sys/devices/platform/msm_sdcc.2/polling
+    chmod 0664 /sys/devices/platform/msm_sdcc.3/polling
+    chmod 0664 /sys/devices/platform/msm_sdcc.4/polling
+    chown system system /sys/devices/platform/msm_sdcc.1/polling
+    chown system system /sys/devices/platform/msm_sdcc.2/polling
+    chown system system /sys/devices/platform/msm_sdcc.3/polling
+    chown system system /sys/devices/platform/msm_sdcc.4/polling
 
     # Wifi
     mkdir /data/misc/wifi 0770 wifi system
@@ -66,6 +70,10 @@ on boot
     chown system system /dev/smd0
 
     chmod 0444 /sys/devices/platform/msm_hsusb/gadget/usb_state
+
+	# TelephonyManager.java requires this
+    chown radio radio /proc/cmdline
+    chmod 0777 /proc/cmdline
 
     # setup permissions for fb1 related nodes
     chown system graphics /sys/class/graphics/fb1/hpd
