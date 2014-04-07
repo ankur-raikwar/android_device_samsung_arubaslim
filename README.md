@@ -1,4 +1,4 @@
-Samsung Galaxy Core (GT-I8262) device source / configuration for building Android 4.3.1 (Cyanogenmod 10.2)
+Samsung Galaxy Core (GT-I8262) device source / configuration for building Android 4.4.2 (Cyanogenmod 11.0)
 
 Getting Started
 -----------------------
@@ -8,7 +8,7 @@ familiar with [Git and Repo](http://source.android.com/download/using-repo).
 
 To initialize your local repository using the CyanogenMod trees, use a command like this:
 
-    repo init -u git://github.com/CyanogenMod/android.git -b cm-10.2
+    repo init -u git://github.com/CyanogenMod/android.git -b cm-11.0
 
 Then to sync up:
 
