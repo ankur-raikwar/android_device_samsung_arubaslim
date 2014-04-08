@@ -4,13 +4,14 @@ on early-init
     mount debugfs debugfs /sys/kernel/debug
 
 on init    
-    # Storage
-    mkdir /storage 0550 system sdcard_r
-    mkdir /storage/sdcard0 0000 system system
-    mkdir /storage/sdcard1 0000 system system
-	# Internal
+    ## Storage
+	mkdir /mnt/media_rw/sdcard0 0700 media_rw media_rw
+	mkdir /mnt/media_rw/sdcard1 0700 media_rw media_rw
+
+    mkdir /storage/sdcard0 0700 root root
+	mkdir /storage/sdcard1 0700 root root
+
     export EXTERNAL_STORAGE /storage/sdcard0
-    # External
     export SECONDARY_STORAGE /storage/sdcard1
     
     ## Create symlinks of storage for backwards compability
@@ -298,20 +299,13 @@ service ril-daemon1 /system/bin/rild -c 1
     disabled
     group radio cache inet misc audio sdcard_rw qcom_oncrpc diag
 
-
-service sdcard /system/bin/sdcard /data/media 1023 1023
+service fuse_sdcard0 /system/bin/sdcard -u 1023 -g 1023 -d /mnt/media_rw/sdcard0 /storage/sdcard0
     class late_start
     disabled
 
-on property:ro.fuse_sdcard=true
-    start sdcard
-
-# This will make sure that sdcard service starts as late_start.
-on nonencrypted
-    setprop ro.fuse_sdcard ${persist.fuse_sdcard}
-
-on property:vold.decrypt=trigger_restart_framework
-    setprop ro.fuse_sdcard ${persist.fuse_sdcard}
+service fuse_sdcard1 /system/bin/sdcard -u 1023 -g 1023 -d /mnt/media_rw/sdcard1 /storage/sdcard1
+    class late_start
+    disabled
 
 # Restart adbd so it can run as root
 on property:service.adb.root=1
