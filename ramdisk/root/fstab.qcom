@@ -6,10 +6,13 @@
 /dev/block/mmcblk0p8      /boot        	emmc     defaults    					    defaults
 /dev/block/mmcblk0p13     /recovery    	emmc     defaults    					    defaults
 /dev/block/mmcblk0p21     /system      	ext4     ro,barrier=1                                       wait
-/dev/block/mmcblk0p22     /cache       	ext4     nosuid,nodev,barrier=0                             wait,check
 /dev/block/mmcblk0p24     /data        	ext4     nosuid,nodev,noauto_da_alloc,barrier=1     	    wait,check,encryptable=footer,length=-16384
-#/dev/null 					/storage/sdcard0  datamedia	defaults    					    defaults
+/dev/block/mmcblk0p22     /cache       	ext4     nosuid,nodev,barrier=1                             wait,check
 
-# vold
-/devices/platform/msm_sdcc.3/mmc_host   /storage/sdcard0     auto     nosuid,nodev     wait,voldmanaged=sdcard0:23,nonremovable
-/devices/platform/msm_sdcc.1/mmc_host   /storage/sdcard1     auto     nosuid,nodev     wait,voldmanaged=sdcard1:auto
+# vold managed volumes
+/devices/platform/msm_sdcc.3/mmc_host   auto     vfat     defaults         voldmanaged=sdcard0:23,noemulatedsd,nonremovable
+/devices/platform/msm_sdcc.1/mmc_host   auto     auto     defaults         voldmanaged=sdcard1:auto,noemulatedsd
+/devices/platform/msm_hsusb_host.0 	auto     auto     defaults         voldmanaged=usbdisk:auto
+
+# zRam
+/dev/block/zram0 none swap defaults zramsize=67108864
